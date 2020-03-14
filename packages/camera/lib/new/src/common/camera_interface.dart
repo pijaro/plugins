@@ -29,6 +29,8 @@ abstract class CameraDescription {
 
   /// Identifier for this camera.
   String get name;
+
+  List<String> get outputs;
 }
 
 /// Abstract class used to create a common interface across platform APIs.

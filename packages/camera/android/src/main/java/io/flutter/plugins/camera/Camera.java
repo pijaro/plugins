@@ -24,6 +24,7 @@ import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.util.Size;
+import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import androidx.annotation.NonNull;
@@ -78,7 +79,8 @@ public class Camera {
       final DartMessenger dartMessenger,
       final String cameraName,
       final String resolutionPreset,
-      final boolean enableAudio)
+      final boolean enableAudio,
+      final String captureResolution)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
@@ -113,7 +115,14 @@ public class Camera {
     ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
     recordingProfile =
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
-    captureSize = computeBestCaptureSize(streamConfigurationMap);
+    Log.i("CAMERA", "Resolution: '" + captureResolution + "'");
+    if(captureResolution.isEmpty() || captureResolution == null) {
+      captureSize = computeBestCaptureSize(streamConfigurationMap);
+    } else {
+      Integer width = Integer.valueOf(captureResolution.split("x")[0]);
+      Integer height = Integer.valueOf(captureResolution.split("x")[1]);
+      captureSize = new Size(width, height);
+    }
     previewSize = computeBestPreviewSize(cameraName, preset);
   }
 

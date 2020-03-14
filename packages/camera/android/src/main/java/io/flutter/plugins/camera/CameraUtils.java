@@ -34,6 +34,10 @@ public final class CameraUtils {
     return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
   }
 
+  static List<Size> getCaptureSizes(StreamConfigurationMap streamConfigurationMap) {
+    return Arrays.asList(streamConfigurationMap.getOutputSizes(ImageFormat.JPEG));
+  }
+
   static Size computeBestCaptureSize(StreamConfigurationMap streamConfigurationMap) {
     // For still image captures, we use the largest available size.
     return Collections.max(
@@ -65,6 +69,19 @@ public final class CameraUtils {
           details.put("lensFacing", "external");
           break;
       }
+
+      StreamConfigurationMap streamConfigurationMap =
+        characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+      List<String> sizesStringList = new ArrayList<>();
+      // sizesStringList.add(new Size(100,100).toString());
+      // sizesStringList.add(new Size(200,200).toString());
+
+      List<Size> sizesList = getCaptureSizes(streamConfigurationMap);
+      for(Size s : sizesList) {
+        sizesStringList.add(s.toString());
+      }
+      details.put("outputs", sizesStringList);
+
       cameras.add(details);
     }
     return cameras;

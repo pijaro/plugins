@@ -84,6 +84,7 @@ Future<List<CameraDescription>> availableCameras() async {
         name: camera['name'],
         lensDirection: _parseCameraLensDirection(camera['lensFacing']),
         sensorOrientation: camera['sensorOrientation'],
+        outputs: camera['outputs'],
       );
     }).toList();
   } on PlatformException catch (e) {
@@ -92,10 +93,11 @@ Future<List<CameraDescription>> availableCameras() async {
 }
 
 class CameraDescription {
-  CameraDescription({this.name, this.lensDirection, this.sensorOrientation});
+  CameraDescription({this.name, this.lensDirection, this.sensorOrientation, this.outputs});
 
   final String name;
   final CameraLensDirection lensDirection;
+  final List<dynamic> outputs;
 
   /// Clockwise angle through which the output image needs to be rotated to be upright on the device screen in its native orientation.
   ///
@@ -245,10 +247,12 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
+    this.captureResolution = ""
   }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
   final ResolutionPreset resolutionPreset;
+  final String captureResolution;
 
   /// Whether to include audio when recording a video.
   final bool enableAudio;
@@ -275,6 +279,7 @@ class CameraController extends ValueNotifier<CameraValue> {
           'cameraName': description.name,
           'resolutionPreset': serializeResolutionPreset(resolutionPreset),
           'enableAudio': enableAudio,
+          'captureResolution': captureResolution
         },
       );
       _textureId = reply['textureId'];
