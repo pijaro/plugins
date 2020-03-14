@@ -40,6 +40,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.lang.IllegalArgumentException;
 
 public class Camera {
   private final SurfaceTextureEntry flutterTexture;
@@ -115,13 +118,19 @@ public class Camera {
     ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
     recordingProfile =
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
-    Log.i("CAMERA", "Resolution: '" + captureResolution + "'");
-    if(captureResolution.isEmpty() || captureResolution == null) {
-      captureSize = computeBestCaptureSize(streamConfigurationMap);
-    } else {
-      Integer width = Integer.valueOf(captureResolution.split("x")[0]);
-      Integer height = Integer.valueOf(captureResolution.split("x")[1]);
+
+    Pattern resolutionPattern = Pattern.compile("^([0-9]*)x([0-9]*)$");
+    Matcher resolutionMatcher = resolutionPattern.matcher(captureResolution);
+    if(captureResolution != null && !captureResolution.isEmpty()) {
+      if(!resolutionMatcher.find()) {
+        throw new IllegalArgumentException("Invalid capture resolution!" 
+          + " Must be in format 'WIDTHxHEIGHT' ie. '800x600'.");
+      }
+      Integer width = Integer.valueOf(resolutionMatcher.group(1));
+      Integer height = Integer.valueOf(resolutionMatcher.group(2));
       captureSize = new Size(width, height);
+    } else {
+      captureSize = computeBestCaptureSize(streamConfigurationMap);
     }
     previewSize = computeBestPreviewSize(cameraName, preset);
   }
