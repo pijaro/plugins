@@ -146,6 +146,8 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
     String resolutionPreset = call.argument("resolutionPreset");
     boolean enableAudio = call.argument("enableAudio");
     String captureResolution = call.argument("captureResolution");
+    Integer sensitivity = call.argument("sensitivity");
+    Long exposureTime = ((Number)call.argument("exposureTime")).longValue();
     TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture =
         textureRegistry.createSurfaceTexture();
     DartMessenger dartMessenger = new DartMessenger(messenger, flutterSurfaceTexture.id());
@@ -157,7 +159,9 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
             cameraName,
             resolutionPreset,
             enableAudio,
-            captureResolution
+            captureResolution,
+            sensitivity,
+            exposureTime
             );
 
     camera.open(result);

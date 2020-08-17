@@ -54,6 +54,8 @@ public class Camera {
   private final Size captureSize;
   private final Size previewSize;
   private final boolean enableAudio;
+  private final Integer sensitivity;
+  private final Long exposureTime;
 
   private CameraDevice cameraDevice;
   private CameraCaptureSession cameraCaptureSession;
@@ -83,11 +85,15 @@ public class Camera {
       final String cameraName,
       final String resolutionPreset,
       final boolean enableAudio,
-      final String captureResolution)
+      final String captureResolution,
+      final Integer sensitivity,
+      final Long exposureTime)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
     }
+    this.sensitivity = sensitivity;
+    this.exposureTime = exposureTime;
 
     this.cameraName = cameraName;
     this.enableAudio = enableAudio;
@@ -133,6 +139,13 @@ public class Camera {
       captureSize = computeBestCaptureSize(streamConfigurationMap);
     }
     previewSize = computeBestPreviewSize(cameraName, preset);
+
+    Long minFrameDuration = getMinFrameDuration(streamConfigurationMap);
+    Log.w("TAG", "Minimum frame duration: " + minFrameDuration.toString());
+  }
+
+  private Long getMinFrameDuration(StreamConfigurationMap streamConfigurationMap) {
+    return streamConfigurationMap.getOutputMinFrameDuration(ImageFormat.JPEG, captureSize);
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
@@ -268,6 +281,17 @@ public class Camera {
           cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
       captureBuilder.addTarget(pictureImageReader.getSurface());
       captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+
+
+
+      // Camera options
+      if(this.sensitivity != 0 || this.exposureTime != 0) {
+        captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+        Log.w("TAG", "Setting camera option sensitivity to " + this.sensitivity);
+        captureBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, this.sensitivity);
+        Log.w("TAG", "Setting camera option exposureTime to " + this.exposureTime);
+        captureBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, this.exposureTime);
+      }
 
       cameraCaptureSession.capture(
           captureBuilder.build(),

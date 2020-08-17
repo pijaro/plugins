@@ -9,7 +9,9 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.CamcorderProfile;
+import android.util.Range;
 import android.util.Size;
+import android.util.Log;
 import io.flutter.plugins.camera.Camera.ResolutionPreset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,8 +75,53 @@ public final class CameraUtils {
       StreamConfigurationMap streamConfigurationMap =
         characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
       List<String> sizesStringList = new ArrayList<>();
-      // sizesStringList.add(new Size(100,100).toString());
-      // sizesStringList.add(new Size(200,200).toString());
+
+      float[] apertures = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_APERTURES);
+      List<Float> aperturesList = new ArrayList<>();
+      if(apertures != null) {
+        for (float f : apertures) {
+          aperturesList.add(f);
+        }
+        details.put("apertures", aperturesList);
+        Log.w("tag", "Apertures: " + aperturesList.toString());
+      } else {
+        Log.w("tag", "Apertures None");
+      }
+
+      float[] focal_lengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
+      List<Float> focalsList = new ArrayList<>();
+      if(focal_lengths != null) {
+        for (float f : focal_lengths) {
+          focalsList.add(f);
+        }
+        details.put("focal_lengths", focalsList);
+        Log.w("tag", "Focal l: " + focalsList.toString());
+      } else {
+        Log.w("tag", "Focal None");
+      }
+
+      Range<Long> exposure_time_ranges = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
+      List<Long> listsOfExposures = new ArrayList<>();
+      listsOfExposures.add(exposure_time_ranges.getLower());
+      listsOfExposures.add(exposure_time_ranges.getUpper());
+      details.put("exposure_time_range", listsOfExposures);
+      if(exposure_time_ranges != null) {
+        Log.w("tag", "Exposures: " + exposure_time_ranges.toString());
+      } else {
+        Log.w("tag", "EXPOSURE NULL");
+      }
+
+      Range<Integer> sensitivity_ranges = characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
+      List<Integer> listsOfSensitivityRanges = new ArrayList<>();
+      listsOfSensitivityRanges.add(sensitivity_ranges.getLower());
+      listsOfSensitivityRanges.add(sensitivity_ranges.getUpper());
+      details.put("sensitivity_range", listsOfSensitivityRanges);
+      if(sensitivity_ranges != null) {
+        Log.w("tag", "Sensitivity ranges: " + sensitivity_ranges.toString());
+      } else {
+        Log.w("tag", "Sensitivity NULL");
+      }
+
 
       List<Size> sizesList = getCaptureSizes(streamConfigurationMap);
       for(Size s : sizesList) {

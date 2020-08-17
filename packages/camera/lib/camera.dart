@@ -85,6 +85,10 @@ Future<List<CameraDescription>> availableCameras() async {
         lensDirection: _parseCameraLensDirection(camera['lensFacing']),
         sensorOrientation: camera['sensorOrientation'],
         outputs: camera['outputs'],
+        apertures: camera['apertures'],
+        focalLengths: camera['focal_lengths'],
+        exposureTimeRange: camera['exposure_time_range'],
+        sensitivityRange: camera['sensitivity_range'],
       );
     }).toList();
   } on PlatformException catch (e) {
@@ -93,11 +97,15 @@ Future<List<CameraDescription>> availableCameras() async {
 }
 
 class CameraDescription {
-  CameraDescription({this.name, this.lensDirection, this.sensorOrientation, this.outputs});
+  CameraDescription({this.name, this.lensDirection, this.sensorOrientation, this.outputs, this.apertures, this.focalLengths, this.exposureTimeRange, this.sensitivityRange});
 
   final String name;
   final CameraLensDirection lensDirection;
   final List<dynamic> outputs;
+  final List<dynamic> apertures;
+  final List<dynamic> focalLengths;
+  final List<dynamic> exposureTimeRange;
+  final List<dynamic> sensitivityRange;
 
   /// Clockwise angle through which the output image needs to be rotated to be upright on the device screen in its native orientation.
   ///
@@ -247,12 +255,16 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.description,
     this.resolutionPreset, {
     this.enableAudio = true,
-    this.captureResolution = ""
+    this.captureResolution = "",
+    this.sensitivity = 0,
+    this.exposureTime = 0
   }) : super(const CameraValue.uninitialized());
 
   final CameraDescription description;
   final ResolutionPreset resolutionPreset;
   final String captureResolution;
+  final int sensitivity;
+  final int exposureTime;
 
   /// Whether to include audio when recording a video.
   final bool enableAudio;
@@ -279,7 +291,9 @@ class CameraController extends ValueNotifier<CameraValue> {
           'cameraName': description.name,
           'resolutionPreset': serializeResolutionPreset(resolutionPreset),
           'enableAudio': enableAudio,
-          'captureResolution': captureResolution
+          'captureResolution': captureResolution,
+          'sensitivity': sensitivity,
+          'exposureTime': exposureTime,
         },
       );
       _textureId = reply['textureId'];
