@@ -102,25 +102,25 @@ public final class CameraUtils {
 
       Range<Long> exposure_time_ranges = characteristics.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
       List<Long> listsOfExposures = new ArrayList<>();
-      listsOfExposures.add(exposure_time_ranges.getLower());
-      listsOfExposures.add(exposure_time_ranges.getUpper());
-      details.put("exposure_time_range", listsOfExposures);
       if(exposure_time_ranges != null) {
+        listsOfExposures.add(exposure_time_ranges.getLower());
+        listsOfExposures.add(exposure_time_ranges.getUpper());
         Log.w("tag", "Exposures: " + exposure_time_ranges.toString());
       } else {
         Log.w("tag", "EXPOSURE NULL");
       }
+      details.put("exposure_time_range", listsOfExposures);
 
       Range<Integer> sensitivity_ranges = characteristics.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE);
       List<Integer> listsOfSensitivityRanges = new ArrayList<>();
-      listsOfSensitivityRanges.add(sensitivity_ranges.getLower());
-      listsOfSensitivityRanges.add(sensitivity_ranges.getUpper());
-      details.put("sensitivity_range", listsOfSensitivityRanges);
       if(sensitivity_ranges != null) {
+        listsOfSensitivityRanges.add(sensitivity_ranges.getLower());
+        listsOfSensitivityRanges.add(sensitivity_ranges.getUpper());
         Log.w("tag", "Sensitivity ranges: " + sensitivity_ranges.toString());
       } else {
         Log.w("tag", "Sensitivity NULL");
       }
+      details.put("sensitivity_range", listsOfSensitivityRanges);
 
 
       List<Size> sizesList = getCaptureSizes(streamConfigurationMap);
