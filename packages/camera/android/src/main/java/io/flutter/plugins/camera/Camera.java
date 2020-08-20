@@ -341,6 +341,15 @@ public class Camera {
     Surface flutterSurface = new Surface(surfaceTexture);
     captureRequestBuilder.addTarget(flutterSurface);
 
+    // Camera options
+    if(this.sensitivity != 0 || this.exposureTime != 0) {
+      captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+      Log.w("TAG", "Setting camera preview option sensitivity to " + this.sensitivity);
+      captureRequestBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, this.sensitivity);
+      Log.w("TAG", "Setting camera preview option exposureTime to " + this.exposureTime);
+      captureRequestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, this.exposureTime);
+    }
+
     List<Surface> remainingSurfaces = Arrays.asList(surfaces);
     if (templateType != CameraDevice.TEMPLATE_PREVIEW) {
       // If it is not preview mode, add all surfaces as targets.
